@@ -64,7 +64,7 @@ $kamus = array(
     'krip'=>'crip',
     'lat'=>'late',
     'til'=>'thy',
-    
+    'drat'=>'drous',
     'luen'=>'luene',
     'oksam'=>'oxam',
     'eksa'=>'exa',
@@ -118,6 +118,8 @@ $kamus = array(
 
 );
 
+
+
     foreach ($kamus as $key => $rlp) {
         $ganti = str_ireplace($key,$rlp,$ganti);
     //        if ($ganti != $kata) {var_dump($ganti);}  FOR TESTING PURPOSES
@@ -126,22 +128,24 @@ $kamus = array(
 
 }
 
-function minix ($x, $y,$z) {  // fungsi ini mencari yang paling minimum aja, sebagai pelengkap min()
-      $h = min($x,$y,$z);
-      if ($h == $x) {
-          return 1;
-      } else if ($h == $y) {
-          return 2;
-      } else {
-          return 3;
-      }
-      
+function difference_value($source, $target) {
+    $s = strlen($source);
+    $t = strlen($target);
+
+    $maxlen = max($s,$t);
+
+    $res = $maxlen - levenshtein($source,$target);
+    return $res/$maxlen*100;
 }
+
+
     //memeriksa apakah levensthein > len(target) / 2 ? jika iya maka tidak diperiksa.
     //echo 'Silahkan masukkan karakter source : ' ;
-    $source = $argv[1];
+    $source = $_POST['source'];
     //echo 'Silahkan masukkan karakter target : ';
-    $target = $argv[2];
+    $target = $_POST['target'];
+    $before_change = difference_value($source,$target);
+
     
 
     //kecilkan karakter tersebut karena akan terjadi perbedaan huruf kapital dan kecil
@@ -173,14 +177,19 @@ function minix ($x, $y,$z) {  // fungsi ini mencari yang paling minimum aja, seb
         }
 
     }
-    echo "\n";
+
+    //create a matrix
+    echo '<h2>Matriks Sumber</h2>
+    <table class="table table-hover"> <tbody>';
     for($i=1;$i<=$m;$i++) {
-        
+        echo '<tr>';
 		for($j=1;$j<=$n;$j++) {
-            echo $d[$i][$j] . "|";
+            echo '<td>' .$d[$i][$j] . "</td>";
         }
-        echo "\n";
+        echo "</tr>";
     }
+    echo '</tbody></table>';
+    echo '<h6>Persentase kemiripan :' . $before_change . '% </h6>';
     
 // Mencetak hasil murni yang telah diproses menggunakan klewig biasa
  
@@ -189,11 +198,11 @@ function minix ($x, $y,$z) {  // fungsi ini mencari yang paling minimum aja, seb
 // Pertama ubah dulu jadi kata replace, kemudian hitung kembali dengan levensthein
 
 $tmp_source = ganti_kata($source);
-var_dump($tmp_source);
+//var_dump($tmp_source);
 $tmp_target = ganti_kata($target);
-var_dump($tmp_target);
+//var_dump($tmp_target);
 // Kedua kita lakukan iterasi seperti diatas..
-
+$after_change = difference_value($tmp_source,$tmp_target);
 
 $s = strlen($tmp_source);
 $t = strlen($tmp_target);
@@ -214,15 +223,19 @@ $tmp_found = array();
     }
 
 }
-echo "\n";
+//create a matrix
+echo '<h2>Matriks Target</h2><h6>Menjadi kata : '.$tmp_target.'</h6>
+<table class="table table-hover"> 
+ <tbody>';
     for($i=1;$i<=$s;$i++) {
-        
+        echo '<tr>';
 		for($j=1;$j<=$t;$j++) {
-            echo $g[$i][$j]. "|";
+            echo '<td>' .$g[$i][$j]. '</td>';
         }
-        echo "\n";
+        echo "</tr>";
     }
-
+    echo '</tbody></table>';
+    echo '<h6>Persentase kemiripan :' . $after_change . '% </h6>';
 //var_dump($tmp_found,levenshtein($s,$t));
 ?>
 
